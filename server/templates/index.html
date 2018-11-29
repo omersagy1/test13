@@ -1,1 +1,19 @@
-Hello, World!!
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='js/main.min.js') }}"></script>
+  </head>
+
+  <body>
+    <div id="elm"></div>
+    <script>
+      const app = Elm.Main.init({
+        node: document.getElementById("elm")
+      });
+    </script>
+  </body>
+
+</html>
