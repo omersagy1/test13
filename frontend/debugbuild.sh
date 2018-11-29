@@ -1,4 +1,4 @@
-js_out="../server/templates/main.min.js"
+js_out="../server/static/js/main.min.js"
 
 echo "building (debug mode)..."
 

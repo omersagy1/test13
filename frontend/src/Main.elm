@@ -43,7 +43,17 @@ update : Message -> Model -> ( Model, Cmd Message )
 update msg model =
     case msg of
         PickLocation ->
-            ( model, Random.generate NewLocation (Random.List.choose [ State "Alabama", State "Alaska" ]) )
+            ( model
+            , Random.generate NewLocation
+                (Random.List.choose
+                    [ State "Alabama"
+                    , State "Alaska"
+                    , State "Arizona"
+                    , State "Arkansas"
+                    , State "California"
+                    ]
+                )
+            )
 
         NewLocation ( newLocation, notPicked ) ->
             case newLocation of
