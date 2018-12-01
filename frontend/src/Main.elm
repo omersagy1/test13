@@ -3,6 +3,8 @@ module Main exposing (Message(..), Model, init, main, update, view)
 import Browser
 import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
+import Http
+import Json.Decode exposing (Decoder, field, string)
 import Random
 import Random.List
 
@@ -17,7 +19,7 @@ main =
 
 
 type alias Model =
-    { result : String
+    { county : String
     }
 
 
@@ -31,42 +33,45 @@ type alias StateCode =
 
 init : () -> ( Model, Cmd Message )
 init _ =
-    ( { result = "" }, Cmd.none )
+    ( { county = "" }, Cmd.none )
 
 
 type Message
-    = PickLocation
-    | NewLocation ( Maybe Location, List Location )
+    = PickCounty
+    | GotCounty (Result Http.Error String)
 
 
 update : Message -> Model -> ( Model, Cmd Message )
 update msg model =
     case msg of
-        PickLocation ->
-            ( model
-            , Random.generate NewLocation
-                (Random.List.choose
-                    [ State "Alabama"
-                    , State "Alaska"
-                    , State "Arizona"
-                    , State "Arkansas"
-                    , State "California"
-                    ]
-                )
-            )
+        PickCounty ->
+            ( model, getRandomCounty )
 
-        NewLocation ( newLocation, notPicked ) ->
-            case newLocation of
-                Nothing ->
-                    ( { result = "" }, Cmd.none )
+        GotCounty result ->
+            case result of
+                Ok countyName ->
+                    ( { model | county = countyName }, Cmd.none )
 
-                Just (State code) ->
-                    ( { result = code }, Cmd.none )
+                Err _ ->
+                    ( model, Cmd.none )
+
+
+getRandomCounty : Cmd Message
+getRandomCounty =
+    Http.get
+        { url = "http://localhost:5000/api/random/county"
+        , expect = Http.expectJson GotCounty countyDecoder
+        }
+
+
+countyDecoder : Decoder String
+countyDecoder =
+    field "county" string
 
 
 view : Model -> Html Message
 view model =
     div []
-        [ button [ onClick PickLocation ] [ text "Where should I live?" ]
-        , div [] [ text model.result ]
+        [ button [ onClick PickCounty ] [ text "Give me a random county!" ]
+        , div [] [ text model.county ]
         ]
