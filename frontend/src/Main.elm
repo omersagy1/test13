@@ -19,7 +19,8 @@ main =
 
 
 type alias Model =
-    { county : String
+    { baseUrl : String
+    , county : String
     }
 
 
@@ -31,9 +32,13 @@ type alias StateCode =
     String
 
 
-init : () -> ( Model, Cmd Message )
-init _ =
-    ( { county = "" }, Cmd.none )
+init : { baseUrl : String } -> ( Model, Cmd Message )
+init flags =
+    ( { county = ""
+      , baseUrl = ""
+      }
+    , Cmd.none
+    )
 
 
 type Message
@@ -45,7 +50,7 @@ update : Message -> Model -> ( Model, Cmd Message )
 update msg model =
     case msg of
         PickCounty ->
-            ( model, getRandomCounty )
+            ( model, getRandomCounty model.baseUrl )
 
         GotCounty result ->
             case result of
@@ -56,10 +61,10 @@ update msg model =
                     ( model, Cmd.none )
 
 
-getRandomCounty : Cmd Message
-getRandomCounty =
+getRandomCounty : String -> Cmd Message
+getRandomCounty baseUrl =
     Http.get
-        { url = "http://localhost:5000/api/random/county"
+        { url = baseUrl ++ "/api/random/county"
         , expect = Http.expectJson GotCounty countyDecoder
         }
 
