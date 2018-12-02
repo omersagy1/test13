@@ -1,35 +1,22 @@
-module Main exposing (Message(..), Model, init, main, update, view)
+module Main exposing (init, main, update)
 
 import Browser
-import Html exposing (Html, button, div, text)
-import Html.Events exposing (onClick)
 import Http
 import Json.Decode exposing (Decoder, field, string)
+import Message exposing (Message(..))
+import Model exposing (Model)
 import Random
 import Random.List
+import View
 
 
 main =
     Browser.element
         { init = init
         , update = update
-        , view = view
+        , view = View.view
         , subscriptions = \m -> Sub.none
         }
-
-
-type alias Model =
-    { baseUrl : String
-    , county : String
-    }
-
-
-type Location
-    = State StateCode
-
-
-type alias StateCode =
-    String
 
 
 init : { baseUrl : String } -> ( Model, Cmd Message )
@@ -39,11 +26,6 @@ init flags =
       }
     , Cmd.none
     )
-
-
-type Message
-    = PickCounty
-    | GotCounty (Result Http.Error String)
 
 
 update : Message -> Model -> ( Model, Cmd Message )
@@ -72,11 +54,3 @@ getRandomCounty baseUrl =
 countyDecoder : Decoder String
 countyDecoder =
     field "county" string
-
-
-view : Model -> Html Message
-view model =
-    div []
-        [ button [ onClick PickCounty ] [ text "Give me a random county!" ]
-        , div [] [ text model.county ]
-        ]
