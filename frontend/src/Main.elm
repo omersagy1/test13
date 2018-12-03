@@ -23,6 +23,7 @@ init : { baseUrl : String } -> ( Model, Cmd Message )
 init flags =
     ( { county = ""
       , baseUrl = ""
+      , population = "10000"
       }
     , Cmd.none
     )
@@ -41,6 +42,12 @@ update msg model =
 
                 Err _ ->
                     ( model, Cmd.none )
+
+        ChangePopulation pop ->
+            ( { model | population = pop }, Cmd.none )
+
+        SearchPopulation pop ->
+            ( model, Cmd.none )
 
 
 getRandomCounty : String -> Cmd Message

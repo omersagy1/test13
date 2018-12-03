@@ -6,3 +6,5 @@ import Http
 type Message
     = PickCounty
     | GotCounty (Result Http.Error String)
+    | ChangePopulation String
+    | SearchPopulation Int
