@@ -82,6 +82,7 @@ searchCityByPopulation baseUrl pop =
 
 cityDecoder : Decoder City
 cityDecoder =
-    Json.Decode.map2 City
+    Json.Decode.map3 City
         (field "city" string)
+        (field "state" string)
         (field "population" int)

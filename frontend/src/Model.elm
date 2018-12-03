@@ -11,5 +11,6 @@ type alias Model =
 
 type alias City =
     { name : String
+    , state : String
     , population : Int
     }

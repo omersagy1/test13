@@ -1,5 +1,6 @@
 module View exposing (view)
 
+import Debug
 import Html exposing (Html, button, div, input, text)
 import Html.Attributes exposing (placeholder, value)
 import Html.Events exposing (onClick, onInput)
@@ -38,6 +39,6 @@ cityDisplay result =
 
         Just city ->
             div []
-                [ div [] [ text city.name ]
+                [ div [] [ text (city.name ++ ", " ++ city.state) ]
                 , div [] [ text ("population: " ++ String.fromInt city.population) ]
                 ]
