@@ -4,7 +4,7 @@ import Html exposing (Html, button, div, input, text)
 import Html.Attributes exposing (placeholder, value)
 import Html.Events exposing (onClick, onInput)
 import Message exposing (Message(..))
-import Model exposing (Model)
+import Model exposing (City, Model)
 
 
 view : Model -> Html Message
@@ -12,7 +12,8 @@ view model =
     div []
         [ button [ onClick PickCounty ] [ text "Give me a random county!" ]
         , div [] [ text model.county ]
-        , populationSearch (Maybe.withDefault 0 (String.toInt model.population))
+        , populationSearch model.population
+        , cityDisplay model.resultCity
         ]
 
 
@@ -23,7 +24,20 @@ populationSearch currentValue =
         , input
             [ placeholder "10000"
             , value (String.fromInt currentValue)
-            , onInput ChangePopulation
+            , onInput (String.toInt >> Maybe.withDefault 0 >> ChangePopulation)
             ]
             []
         ]
+
+
+cityDisplay : Maybe City -> Html Message
+cityDisplay result =
+    case result of
+        Nothing ->
+            div [] [ text "No result..." ]
+
+        Just city ->
+            div []
+                [ div [] [ text city.name ]
+                , div [] [ text ("population: " ++ String.fromInt city.population) ]
+                ]

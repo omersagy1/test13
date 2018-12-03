@@ -2,9 +2,9 @@ module Main exposing (init, main, update)
 
 import Browser
 import Http
-import Json.Decode exposing (Decoder, field, string)
+import Json.Decode exposing (Decoder, field, int, string)
 import Message exposing (Message(..))
-import Model exposing (Model)
+import Model exposing (City, Model)
 import Random
 import Random.List
 import View
@@ -23,7 +23,8 @@ init : { baseUrl : String } -> ( Model, Cmd Message )
 init flags =
     ( { county = ""
       , baseUrl = ""
-      , population = "10000"
+      , population = 10000
+      , resultCity = Nothing
       }
     , Cmd.none
     )
@@ -47,7 +48,15 @@ update msg model =
             ( { model | population = pop }, Cmd.none )
 
         SearchPopulation pop ->
-            ( model, Cmd.none )
+            ( model, searchCityByPopulation model.baseUrl pop )
+
+        GotCity result ->
+            case result of
+                Ok city ->
+                    ( { model | resultCity = Just city }, Cmd.none )
+
+                Err _ ->
+                    ( { model | resultCity = Nothing }, Cmd.none )
 
 
 getRandomCounty : String -> Cmd Message
@@ -61,3 +70,18 @@ getRandomCounty baseUrl =
 countyDecoder : Decoder String
 countyDecoder =
     field "county" string
+
+
+searchCityByPopulation : String -> Int -> Cmd Message
+searchCityByPopulation baseUrl pop =
+    Http.get
+        { url = baseUrl ++ "/api/city?pop=" ++ String.fromInt pop
+        , expect = Http.expectJson GotCity cityDecoder
+        }
+
+
+cityDecoder : Decoder City
+cityDecoder =
+    Json.Decode.map2 City
+        (field "city" string)
+        (field "population" int)
